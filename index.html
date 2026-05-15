@@ -1349,7 +1349,7 @@ a { color: var(--rust); text-decoration: none; }
             <div class="deliverable-title">Case Note Automation <span class="tag">/case-note</span></div>
             <div class="deliverable-desc">Record a call. Get NDIS-compliant case notes in two minutes. Not 30. No more five-step copy-paste loop. Works for your whole team, not just you. Sam, JC, Leah, Christine - everyone saves the same amount of time on every single visit.</div>
             <div class="deliverable-tech">
-              <strong>Technical spec:</strong> Audio recording (voice memo or Speak App export) sent to OpenAI Whisper API for transcription. Transcript passed to Claude with NDIS-compliant case note template (date, time, duration, charge item code, participant name, narrative). Claude formats into structured case notes matching Astalty's required fields. Output delivered as formatted text ready to paste into Astalty, or pushed directly via Astalty data bridge (Phase 2). Skill invoked via Claude Code CLI (/case-note) or Telegram voice note. All four coordinators can use independently.
+              <strong>Technical spec:</strong> Audio recording (voice memo or Speak App export) sent to OpenAI Whisper API for transcription. Transcript passed to Claude with NDIS-compliant case note template (date, time, duration, charge item code, participant name, narrative). Claude formats into structured case notes matching Astalty's required fields. Output delivered as formatted text ready to paste into Astalty, or pushed directly via Astalty API (beta, full write access). Skill invoked via Claude Code CLI (/case-note) or Telegram voice note. All four coordinators can use independently.
             </div>
           </div>
         </li>
@@ -1369,7 +1369,7 @@ a { color: var(--rust); text-decoration: none; }
             <div class="deliverable-title">Command Centre</div>
             <div class="deliverable-desc">One screen. Everything. Inbox status, tasks, case notes, invoices, team activity, audit prep. Click through to any system in your stack. No more six tabs. No more context switching. The full picture of your business, at a glance.</div>
             <div class="deliverable-tech">
-              <strong>Technical spec:</strong> Single-page HTML dashboard served locally or via Render. Pulls live data from: Microsoft Graph API (Outlook inbox count, Planner tasks, SharePoint files), Astalty (participant data, case notes, invoice status - via Playwright browser automation since no API exists), and Xero API (invoice reconciliation status, revenue tracking). Auto-refreshes every 5 minutes. Each item links directly to its source system. Separate views for Sam (full operational) and team (simplified). Built with vanilla HTML/CSS/JS - no framework dependencies.
+              <strong>Technical spec:</strong> Single-page HTML dashboard served locally or via Render. Pulls live data from: Microsoft Graph API (Outlook inbox count, Planner tasks, SharePoint files), Astalty API (participant data, case notes, invoice status - beta API with full read/write, docs at api.app.astalty.com.au/docs), and Xero API (invoice reconciliation status, revenue tracking). Auto-refreshes every 5 minutes. Each item links directly to its source system. Separate views for Sam (full operational) and team (simplified). Built with vanilla HTML/CSS/JS - no framework dependencies.
             </div>
           </div>
         </li>
@@ -1445,7 +1445,7 @@ a { color: var(--rust); text-decoration: none; }
             <div class="deliverable-title">Invoice Reconciliation <span class="tag">/invoice</span></div>
             <div class="deliverable-desc">Astalty batch export, Xero, bank feed - done as a sequence, automatically. Bulk plan manager payments broken apart correctly without manual calculation. Your Sunday afternoon becomes a Sunday afternoon again.</div>
             <div class="deliverable-tech">
-              <strong>Technical spec:</strong> Weekly scheduled agent. Step 1: Pull completed Astalty tasks via data bridge, run batch invoice. Step 2: Auto-log each invoice to tax tracking spreadsheet (invoice number, plan manager, client initial, date, amount, 30% tax withholding). Step 3: Monitor Xero API bank feed for incoming payments. Step 4: Match bulk plan manager remittance payments against individual invoices using Xero API - break apart bulk payments automatically. Step 5: Flag unreconciled invoices after 14 days. Step 6: Generate weekly reconciliation summary to Sam via Telegram. Xero API (OAuth 2.0) for accounting integration, Astalty via Playwright bridge for task/invoice data.
+              <strong>Technical spec:</strong> Weekly scheduled agent. Step 1: Pull completed Astalty tasks via data bridge, run batch invoice. Step 2: Auto-log each invoice to tax tracking spreadsheet (invoice number, plan manager, client initial, date, amount, 30% tax withholding). Step 3: Monitor Xero API bank feed for incoming payments. Step 4: Match bulk plan manager remittance payments against individual invoices using Xero API - break apart bulk payments automatically. Step 5: Flag unreconciled invoices after 14 days. Step 6: Generate weekly reconciliation summary to Sam via Telegram. Xero API (OAuth 2.0) for accounting integration, Astalty API (beta) for task/invoice data. Direct API-to-API pipeline - no browser automation needed.
             </div>
           </div>
         </li>
@@ -1453,9 +1453,9 @@ a { color: var(--rust); text-decoration: none; }
           <div class="deliverable-num">4</div>
           <div class="deliverable-body">
             <div class="deliverable-title">Astalty Data Bridge</div>
-            <div class="deliverable-desc">Astalty has no API. We bridge it anyway. Your CRM connects to the rest of your stack without you being the bridge anymore. Data flows, reports pull correctly, and the systems that should talk to each other - finally do.</div>
+            <div class="deliverable-desc">Astalty has a beta API with full read/write access. Your CRM connects directly to the rest of your stack - no workarounds needed. Data flows, reports pull correctly, and the systems that should talk to each other finally do.</div>
             <div class="deliverable-tech">
-              <strong>Technical spec:</strong> Playwright browser automation running on Sam's machine. Logs into Astalty using stored credentials, navigates to required pages, extracts participant data, case notes, task records, and billing data via DOM scraping. Data cached locally in structured JSON. Scheduled sync runs every 30 minutes during business hours (8am-6pm ACST). Screenshots taken during extraction, data extracted, screenshots destroyed immediately for data compliance. Bridge exposes a local API endpoint that other agents (command centre, case notes, invoicing) query for Astalty data without needing their own browser sessions. All data stays on Sam's machine - never transmitted externally.
+              <strong>Technical spec:</strong> Astalty API (beta) with account-owner-level API key providing full read/write access. API docs at api.app.astalty.com.au/docs. Authenticated via API key stored in local .env file. Local Python wrapper caches participant data, case notes, task records, and billing data in structured JSON. Scheduled sync runs every 30 minutes during business hours (8am-6pm ACST). Wrapper exposes a local API endpoint that other agents (command centre, case notes, invoicing) query for Astalty data. Direct API calls replace browser automation - faster, more reliable, no browser session management. All data stays on Sam's machine - never transmitted externally.
             </div>
           </div>
         </li>
